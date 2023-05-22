@@ -7,7 +7,7 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 
 - [ ] Make the script executable from qimgv. 
 - [ ] Add file size compare up to 24MB to do AVIF or WEBP.
-- [ ] Add flag to keep original upscaled image. 
+- [x] Add flag to keep original upscaled image. 
 - [ ] Add more models, for instance digital art ones, see what Upscayl uses. 
 - [ ] Try and find the fix for ffmpeg's libaom-av1 encoder, maybe use SVT-AV1 instead, maybe use some API. 
 - [ ] Think of a way to constantly show the full progress bar when upscaling a folder.
@@ -17,10 +17,11 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 The upscaler uses a dedicated Vulkan-supported GPU to do upscaling. 
 
 ```bash
-./upscale.sh {file or folder you want to upscale}
+./upscale.sh {file or folder you want to upscale} {--keep to keep original upscaled image}
 ```
 
-You can suspend the process with `Ctrl` + `z` and resume it with `fg`.
+You can suspend the process with `Ctrl` + `z` and resume it with `fg`.\
+You can stop the process with `Ctrl` + `c`.
 
 ## Model Downloads
 
