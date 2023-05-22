@@ -5,12 +5,15 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 
 ## TODO List
 
+- [ ] Make it able to run from any directory. An alias could solve this, but then I'd need to change the upscale.sh call in here aswell. Maybe put it in /usr/bin?
+- [ ] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. See test folder 2. 
+- [ ] I'm guessing it's the same problem with spaces in file names. 
 - [ ] Make the script executable from qimgv. 
 - [ ] Add file size compare up to 24MB to do AVIF or WEBP.
 - [x] Add flag to keep original upscaled image. 
 - [ ] Add more models, for instance digital art ones, see what Upscayl uses. 
 - [ ] Try and find the fix for ffmpeg's libaom-av1 encoder, maybe use SVT-AV1 instead, maybe use some API. 
-- [ ] Think of a way to constantly show the full progress bar when upscaling a folder.
+- [ ] Think of a way to constantly show the full progress bar when upscaling a folder. For instance, look up how many images are in the folder, and count how many have been upscaled, then show the progress bar based on that after every upscale.
 
 ## Usage
 

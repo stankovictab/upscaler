@@ -1,7 +1,11 @@
 #!/bin/bash
 
-echo $1
-echo $2
+echo First Argument: $1
+echo Second Argument: $2
+
+# Replace spaces with \ in the path of $1
+path="${1// /\\ }" # Makes me wanna shit myself
+echo Formatted Path: $path
 
 upscaler="ultramix_balanced" # Change the upscaler here, this name should be the same as the model name in the folder
 upscalerAlt="UltraMixBalanced"
