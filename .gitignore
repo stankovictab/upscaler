@@ -1,0 +1,4 @@
+# Ignore all models, but not the models folder itself
+models/*.param
+models/*.bin
+tests/

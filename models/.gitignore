@@ -1,3 +1,0 @@
-# This ignores all models, but not the models/ folder itself
-*.param
-*.bin
