@@ -14,16 +14,20 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 
 ## Usage
 
-`./upscale.sh {input}`
+The upscaler uses a dedicated Vulkan-supported GPU to do upscaling. 
 
-You can suspend the project with `Ctrl` + `z` and resume it with `fg`.
+```bash
+./upscale.sh {file or folder you want to upscale}
+```
+
+You can suspend the process with `Ctrl` + `z` and resume it with `fg`.
 
 ## Model Downloads
 
 As the upscaler is based on NCNN, you need `.param` and `.bin` files to use it.
 
-Here are the models I most commonly use:
-- UltraMix Balanced - Download from [Upscayl's git](https://github.com/upscayl/upscayl/tree/main/resources/models) repository.
+Here are the models I most commonly use :
+- UltraMix Balanced - Download from [Upscayl's git](https://github.com/upscayl/upscayl/tree/main/resources/models) repository, as I couldn't find it anywhere else.
 - 4x UltraSharp - Download from [The Model Database](https://upscale.wiki/wiki/Model_Database).
 - UniScaleV2 - Download from [The Model Database](https://upscale.wiki/wiki/Model_Database).
 
@@ -31,5 +35,9 @@ Place the downloaded models (`.param` and `.bin` files) in the `models/` folder.
 
 ## AVIF Issue
 
-Using `ffmpeg` to convert to AVIF is not working for images over 25MB for some reason.
-So, for file sizes larger than that WEBP compression is used, the second best option.
+Using `ffmpeg` to convert to AVIF is not working for images over 25MB for some reason.\
+So, for file sizes larger than that WEBP compression is used, the second best option.\
+Note that I've tried various online converters and they worked.\
+From my testing the upscaled images weren't corrupt or anything, and it's not the resolution of them that's the issue, \
+but the file size, everything up to 25.3MB was ok, but it failed onwards.\
+The `ffmpeg` parameters such as `-cpu-used` and `-crf` also played no role in it from what I could tell. 
