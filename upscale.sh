@@ -2,8 +2,18 @@
 
 # NOTE: A lot of command calls require the input to be in quotes because of the absolute path, which deals with folders with spaces in them
 
-echo First Argument: $1
-echo Second Argument: $2
+# If no argument is passed, exit the script
+if [ -z "$1" ]; then
+	echo -e "\e[31mNo argument passed! Make sure you pass in a file or folder you want to upscale. Exiting.\e[0m"
+	exit
+fi
+
+script_path=$(readlink -f "$0")
+script_path="${script_path%/*}" # This is the absolute path of the folder the upscaler is in
+# echo $script_path 
+
+# echo First Argument: $1
+# echo Second Argument: $2
 
 absolutePath=$(readlink -f "$1") # Get the absolute path of the file, the input to readlink must be in quotes if the folder has spaces
 echo Absolute Path: $absolutePath
@@ -58,13 +68,11 @@ echo "Extension:" $extension
 echo -e "\e[32mUpscaling started on $noExtensionNonFormatted-$upscalerAlt.$extension.\e[0m"
 
 # Note that it generates PNGs if you input PNGs, and JPGs if you input JPGs, etc
-./realesrgan-ncnn-vulkan -i "$absolutePath" -o "$noExtensionNonFormatted-$upscalerAlt.$extension" -m models -n $upscaler
+$script_path/realesrgan-ncnn-vulkan -i "$absolutePath" -o "$noExtensionNonFormatted-$upscalerAlt.$extension" -m models -n $upscaler
 
 echo -e "\e[32mUpscaling finished, starting compression.\e[0m"
 
-# TODO: Compressing with ffmpeg and libaom-av1 into AVIF doesn't work for files larger than 25MB for some unknown reason
-# So, until that gets magically fixed, WEBp is the second best thing. It's configured to use the highest quality and compression level for the same file size.
-
+# TODO: Compressing with ffmpeg and libaom-av1 into AVIF doesn't work for files larger than 25MB for some unknown reason, see the README. 
 ffmpeg -hide_banner -i "$noExtensionNonFormatted-$upscalerAlt.$extension" -c:v libwebp -quality 83 -compression_level 6 "$noExtensionNonFormatted-$upscalerAlt-Webp-Compressed.webp" -y
 # ffmpeg -hide_banner -i $input-$upscalerAlt.$extension -c:v libaom-av1 -cpu-used 8 -crf 21 $input-$upscalerAlt-AV1-CRF21.avif
 # ffmpeg -hide_banner -i $input-$upscalerAlt.$extension $input-$upscalerAlt-JPG-Compressed.jpg

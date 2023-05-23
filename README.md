@@ -1,13 +1,15 @@
 # upscaler
 Batch upscaling and compression script.
 
-Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan].)
+Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan].).
 
 ## TODO List
 
-- [ ] Make it able to run from any directory. An alias could solve this, but then I'd need to change the upscale.sh call in here aswell. Maybe put it in /usr/bin?
+- [x] Make upscale.sh runnable from anywhere. An alias can solve this?
+- [x] The upscaler call in the script needs to then run from anywhere. 
 - [x] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. This should fix spaces in file names aswell. 
-- [ ] See if the / at the end if passing a folder needs to be removed in order to not get the // thing. 
+- [ ] If you just say upscale 1, it'll create a folder 1 and an Upscaled folder in it. Make a check to see if "1" actually exists, if it doesn't, don't do anything. 
+- [ ] See if the / at the end if passing a folder needs to be removed in order to not get the // thing in echos. Seems like it doesn't impact functionality.
 - [ ] Make a new flag `--avif` to force AV1 compression, as sometimes it works for ~80MB files. Very weird. Say it's experimental. 
 - [ ] Make the script executable from qimgv. 
 - [ ] Add file size compare up to 24MB to do AVIF or WEBP.
@@ -15,6 +17,15 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 - [ ] Add more models, for instance digital art ones, see what Upscayl uses. 
 - [ ] Try and find the fix for ffmpeg's libaom-av1 encoder, maybe use SVT-AV1 instead, maybe use some API. 
 - [ ] Think of a way to constantly show the full progress bar when upscaling a folder. For instance, look up how many images are in the folder, and count how many have been upscaled, then show the progress bar based on that after every upscale.
+
+## Installation
+
+Clone the repo, and have `ffmpeg` installed.\
+I also suggest making a shell alias for the script to the folder you've cloned, so you can run it from anywhere.
+
+```bash
+alias upscale="~/Desktop/upscaler/upscale.sh" # For example
+```
 
 ## Usage
 
@@ -41,8 +52,9 @@ Place the downloaded models (`.param` and `.bin` files) in the `models/` folder.
 ## AVIF Issue
 
 Using `ffmpeg` to convert to AVIF is not working for images over 25MB for some reason.\
-So, for file sizes larger than that WEBP compression is used, the second best option.\
+So, for now WEBP compression is used, the second best option.\
 Note that I've tried various online converters and they worked.\
 From my testing the upscaled images weren't corrupt or anything, and it's not the resolution of them that's the issue, \
 but the file size, everything up to 25.3MB was ok, but it failed onwards.\
-The `ffmpeg` parameters such as `-cpu-used` and `-crf` also played no role in it from what I could tell. 
+The `ffmpeg` parameters such as `-cpu-used` and `-crf` also played no role in it from what I could tell.\
+I've tried it on some images that are ~80MB today and it worked. Amazing. 
