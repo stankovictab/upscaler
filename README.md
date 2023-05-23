@@ -6,8 +6,9 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 ## TODO List
 
 - [ ] Make it able to run from any directory. An alias could solve this, but then I'd need to change the upscale.sh call in here aswell. Maybe put it in /usr/bin?
-- [ ] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. See test folder 2. 
-- [ ] I'm guessing it's the same problem with spaces in file names. 
+- [x] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. This should fix spaces in file names aswell. 
+- [ ] See if the / at the end if passing a folder needs to be removed in order to not get the // thing. 
+- [ ] Make a new flag `--avif` to force AV1 compression, as sometimes it works for ~80MB files. Very weird. Say it's experimental. 
 - [ ] Make the script executable from qimgv. 
 - [ ] Add file size compare up to 24MB to do AVIF or WEBP.
 - [x] Add flag to keep original upscaled image. 
