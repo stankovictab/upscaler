@@ -10,12 +10,13 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 - [x] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. This should fix spaces in file names aswell. 
 - [ ] If you just say upscale 1, it'll create a folder 1 and an Upscaled folder in it. Make a check to see if "1" actually exists, if it doesn't, don't do anything. 
 - [ ] See if the / at the end if passing a folder needs to be removed in order to not get the // thing in echos. Seems like it doesn't impact functionality.
-- [ ] Make a new flag `--avif` to force AV1 compression, as sometimes it works for ~80MB files. Very weird. Say it's experimental. 
-- [ ] Make the script executable from qimgv. 
-- [ ] Add file size compare up to 24MB to do AVIF or WEBP.
+- [x] Make a post on reddit about the ffmpeg issue. 
+- [ ] Mention that you need imagemagick for the AVIF check. 
+- [ ] Fix the qimgv AVIF script in scripts/. 
+- [ ] Make this script executable from qimgv. 
+- [x] Add image pixel count comparison in order to do AVIF or WEBP.
 - [x] Add flag to keep original upscaled image. 
 - [ ] Add more models, for instance digital art ones, see what Upscayl uses. 
-- [ ] Try and find the fix for ffmpeg's libaom-av1 encoder, maybe use SVT-AV1 instead, maybe use some API. 
 - [ ] Think of a way to constantly show the full progress bar when upscaling a folder. For instance, look up how many images are in the folder, and count how many have been upscaled, then show the progress bar based on that after every upscale.
 
 ## Installation
@@ -51,10 +52,20 @@ Place the downloaded models (`.param` and `.bin` files) in the `models/` folder.
 
 ## AVIF Issue
 
-Using `ffmpeg` to convert to AVIF is not working for images over 25MB for some reason.\
-So, for now WEBP compression is used, the second best option.\
-Note that I've tried various online converters and they worked.\
-From my testing the upscaled images weren't corrupt or anything, and it's not the resolution of them that's the issue, \
-but the file size, everything up to 25.3MB was ok, but it failed onwards.\
-The `ffmpeg` parameters such as `-cpu-used` and `-crf` also played no role in it from what I could tell.\
-I've tried it on some images that are ~80MB today and it worked. Amazing. 
+Using `ffmpeg` to convert to AVIF is not working for images that have more than ~35 million pixels for some reason.\
+I've tried various online converters and they worked.\
+From my testing the upscaled images weren't corrupt, as they're all generated the same way via the same upscaler, so it has to be `ffmpeg`.\
+I've also considered that it might be the file size, that's not it, I've tried it on some images that are ~80MB and it worked.\
+I've thought the `ffmpeg` parameters might be the issue, that's not it either.\
+I've thought it was the lack of RAM, but that's not it either.\
+The final test was resolution, and that seems to be it.\
+Here's the testing I've done. 
+- 5200x6496 works, 5600x6996 doesn't. 
+- 5300x6496 works, 5400x6744 doesn't.
+- 5320x6644 works (35346080 pixels), 5360x6696 (35890560 pixels) doesn't.
+- It's not the width or height specifically, 703x6694 works, and 5360x784 works. 
+It's the number of pixels.
+- 5360x6623 (35499280 pixels) does work, 5359x6666 (35729760 pixels) doesn't work.
+
+Based on this I can make a cutoff to not do AVIF if the number of pixels is over 35499300.\
+So, for upscaled images that are larger than that, WEBP compression is used, the second best option, and that one works like expected.\

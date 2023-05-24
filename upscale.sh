@@ -10,7 +10,7 @@ fi
 
 script_path=$(readlink -f "$0")
 script_path="${script_path%/*}" # This is the absolute path of the folder the upscaler is in
-# echo $script_path 
+echo "Script Path:" $script_path 
 
 # echo First Argument: $1
 # echo Second Argument: $2
@@ -44,7 +44,7 @@ else
 	for file in "$1"/*; do
 		if [[ $file == *".jpg"* ]] || [[ $file == *".png"* ]] || [[ $file == *".webp"* ]] || [[ $file == *".avif"* ]]; then
 			echo -e "\e[32mUpscaling file of directory: $file.\e[0m"
-			./upscale.sh "$file" $2 # Need to pass in the same second argument
+			$script_path/upscale.sh "$file" $2 # Need to pass in the same second argument
 		else
 			echo -e "\e[31mFile is not an image, skipping $file.\e[0m"
 		fi
@@ -72,10 +72,20 @@ $script_path/realesrgan-ncnn-vulkan -i "$absolutePath" -o "$noExtensionNonFormat
 
 echo -e "\e[32mUpscaling finished, starting compression.\e[0m"
 
-# TODO: Compressing with ffmpeg and libaom-av1 into AVIF doesn't work for files larger than 25MB for some unknown reason, see the README. 
-ffmpeg -hide_banner -i "$noExtensionNonFormatted-$upscalerAlt.$extension" -c:v libwebp -quality 83 -compression_level 6 "$noExtensionNonFormatted-$upscalerAlt-Webp-Compressed.webp" -y
-# ffmpeg -hide_banner -i $input-$upscalerAlt.$extension -c:v libaom-av1 -cpu-used 8 -crf 21 $input-$upscalerAlt-AV1-CRF21.avif
-# ffmpeg -hide_banner -i $input-$upscalerAlt.$extension $input-$upscalerAlt-JPG-Compressed.jpg
+width=$(identify -format "%w" "$noExtensionNonFormatted-$upscalerAlt.$extension")
+height=$(identify -format "%h" "$noExtensionNonFormatted-$upscalerAlt.$extension")
+pixels=$((width * height))
+# echo "Image (" $width "x" $height ") has this many pixles:" $pixels
+
+# Compressing with libaom-av1 doesn't work for images that have more than 35mil pixels for some unknown reason. See the README, tests have been done. 
+# TODO: This comparison is weird, it might break
+if [ $pixels -lt "35499300" ]; then
+	echo -e "\e[33mImage is smaller than 35499300 pixels, compressing with libaom-av1.\e[0m"
+    ffmpeg -hide_banner -i "$noExtensionNonFormatted-$upscalerAlt.$extension" -c:v libaom-av1 -cpu-used 8 -crf 21 "$noExtensionNonFormatted-$upscalerAlt-AV1-CRF21.avif" -y
+else
+	echo -e "\e[33mImage is larger than 35499300 pixels, compressing with libwebp.\e[0m"
+    ffmpeg -hide_banner -i "$noExtensionNonFormatted-$upscalerAlt.$extension" -c:v libwebp -quality 83 -compression_level 6 "$noExtensionNonFormatted-$upscalerAlt-Webp-Compressed.webp" -y
+fi
 
 echo -e "\e[32mFile compression finished.\e[0m"
 
