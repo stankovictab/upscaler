@@ -8,20 +8,21 @@ Upscaler is `realesrgan-ncnn-vulkan-v0.2.0-ubuntu`, you can get it from [here](h
 - [x] Make upscale.sh runnable from anywhere. An alias can solve this?
 - [x] The upscaler call in the script needs to then run from anywhere. 
 - [x] Fix not being able to run if a folder has spaces in it. So escape whitespace and other characters? Maybe try and find a way to convert imported paths to absolute ones. This should fix spaces in file names aswell. 
-- [ ] If you just say upscale 1, it'll create a folder 1 and an Upscaled folder in it. Make a check to see if "1" actually exists, if it doesn't, don't do anything. 
-- [ ] See if the / at the end if passing a folder needs to be removed in order to not get the // thing in echos. Seems like it doesn't impact functionality.
+- [x] If you just say upscale 1, it'll create a folder 1 and an Upscaled folder in it. Make a check to see if "1" actually exists, if it doesn't, don't do anything. 
 - [x] Make a post on reddit about the ffmpeg issue. 
-- [ ] Mention that you need imagemagick for the AVIF check. 
-- [ ] Fix the qimgv AVIF script in scripts/. 
-- [ ] Make this script executable from qimgv. 
+- [x] Think about moving the `mkdir` line up before the loop, so that it creates the folder for every upscale - this is useful for qimgv's single image upscale.
+- [ ] Think about moving the `mv` line up into the loop too, so that it moves into the folder on every single upscale, so that it doesn't clutter shit up. 
+- [x] Fix the qimgv AVIF script in ~/scripts/. 
+- [x] Make this script executable from qimgv. 
 - [x] Add image pixel count comparison in order to do AVIF or WEBP.
 - [x] Add flag to keep original upscaled image. 
 - [ ] Add more models, for instance digital art ones, see what Upscayl uses. 
 - [ ] Think of a way to constantly show the full progress bar when upscaling a folder. For instance, look up how many images are in the folder, and count how many have been upscaled, then show the progress bar based on that after every upscale.
+- [ ] Upgrade to libaom 3.6.1 to fix AVIF issue, and then remove the pixel count check. (package `libaom`, still not updated in Fedora's repos.)
 
 ## Installation
 
-Clone the repo, and have `ffmpeg` installed.\
+Clone the repo, and have `ffmpeg` and `imagemagick` installed.\
 I also suggest making a shell alias for the script to the folder you've cloned, so you can run it from anywhere.
 
 ```bash
@@ -37,7 +38,9 @@ The upscaler uses a dedicated Vulkan-supported GPU to do upscaling.
 ```
 
 You can suspend the process with `Ctrl` + `z` and resume it with `fg`.\
-You can stop the process with `Ctrl` + `c`.
+You can stop the process with `Ctrl` + `c`.\
+Upscaling a folder will not upscale folders inside that folder, only the content, it's non-recursive.\
+Upscaling a file in a folder that already has the Upscaled folder will place the upscaled file in that folder.
 
 ## Model Downloads
 
@@ -68,4 +71,9 @@ It's the number of pixels.
 - 5360x6623 (35499280 pixels) does work, 5359x6666 (35729760 pixels) doesn't work.
 
 Based on this I can make a cutoff to not do AVIF if the number of pixels is over 35499300.\
-So, for upscaled images that are larger than that, WEBP compression is used, the second best option, and that one works like expected.\
+So, for upscaled images that are larger than that, WEBP compression is used, the second best option, and that one works like expected. 
+
+After posting questions and doing some research, it seems like AV1 was never meant to be used for video over 8K, which this technically is.\
+Furthermore, there's a new version of `libaom`, 3.6.1, that actually fixes this exact issue, and allows you to compress video in higher resolutions.\
+See more [here](https://www.mail-archive.com/kde-bugs-dist@kde.org/msg810055.html).\
+And [here](https://www.reddit.com/r/programming/comments/ykq4fr/comment/iuz03l1/?utm_source=share&utm_medium=web2x&context=3).
